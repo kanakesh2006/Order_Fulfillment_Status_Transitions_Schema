@@ -1,0 +1,50 @@
+// https://dbdiagram.io/d/Order-Fulfillment-and-Status-Transitions-Schema-6ae4dfaaf99a5c458bbeaa96
+
+Table users {
+  id serial [pk, increment]
+  name varchar(100) [not null]
+  email varchar(100) [not null, unique]
+  phone varchar(20)
+  created_at timestamp [default: `now()`]
+}
+
+Table products {
+  id serial [pk, increment]
+  name varchar(150) [not null]
+  price decimal(10,2) [not null]
+  stock int [not null, default: 0]
+  created_at timestamp [default: `now()`]
+}
+
+Table orders {
+  id serial [pk, increment]
+  user_id int [not null]
+  status varchar(30) [not null, default: 'Pending']
+  total_amount decimal(10,2) [not null]
+  shipping_address text [not null]
+  carrier varchar(50)
+  tracking_number varchar(100)
+  created_at timestamp [default: `now()`]
+}
+
+Table order_items {
+  id serial [pk, increment]
+  order_id int [not null]
+  product_id int [not null]
+  quantity int [not null]
+  price decimal(10,2) [not null]
+}
+
+Table order_status_history {
+  id serial [pk, increment]
+  order_id int [not null]
+  status varchar(30) [not null]
+  notes text
+  changed_at timestamp [default: `now()`]
+}
+
+// Relationships
+Ref: orders.user_id > users.id
+Ref: order_items.order_id > orders.id
+Ref: order_items.product_id > products.id
+Ref: order_status_history.order_id > orders.id
